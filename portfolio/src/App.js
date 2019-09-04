@@ -11,7 +11,7 @@ function App() {
       {/* Always shows a header, even in smaller screens. */}
       <div>
         <Layout fixedHeader>
-          <Header className = 'header-color' title={<span><span style={{ color: '#ddd' }}>Brand Name</span></span>}>
+          <Header className = 'header-color' title={<span><span style={{ color: '#ddd' }}><Link to ='/' style={{textDecoration:'none', color:'#ddd'}}>NightGeeks Inc.</Link></span></span>}>
             <Navigation>
               <Link to="/aboutme">About</Link>
               <Link to="/resume">Resume</Link>
