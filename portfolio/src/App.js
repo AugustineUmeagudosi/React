@@ -19,7 +19,7 @@ function App() {
               <Link to="/contact">Contact</Link>
             </Navigation>
           </Header>
-          <Drawer title="Quick Links">
+          <Drawer title={<Link style={{textDecoration: 'none'}} to="/">NightGeeks Inc.</Link>}>
             <Navigation>
               <Link to="/aboutme">About</Link>
               <Link to="/resume">Resume</Link>
