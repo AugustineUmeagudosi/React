@@ -1,56 +1,167 @@
 import React, {Component} from 'react';
-import {Grid, Cell, List, ListItem, ListItemContent} from 'react-mdl';
+
+const emailRegex = RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+
+const formValid = ({formErrors, ...rest}) => {
+    let valid = true;
+    
+    // validate form errors being empty
+    Object.values(formErrors).forEach(val => {
+        val.length > 0 && (valid = false)
+    });
+
+    //validate the form was filled out
+    Object.values(rest).forEach(val => {
+        val === null && (valid = false)
+    });
+    return valid;
+}
 
 class Contact extends Component {
+    constructor(props){
+        super(props);
+
+        this.state ={
+            firstName: null,
+            lastName: null,
+            email: null,
+            password: null,
+            formErrors: {
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: ""
+            }
+        };
+    }
+
+    handleSubmit = e => {
+        e.preventDefault();
+
+        if(formValid(this.state)){
+            console.log(`
+                --Submitting--
+                First Name: ${this.state.firstName}
+                Last Name: ${this.state.lastName}
+                Email: ${this.state.email}
+                Password: ${this.state.password}
+            `)
+        } else{
+            console.error('FORM INVALID - DISPLAY ERROR MESSAGE');
+        }
+    }
+
+    handleChange = e => {
+        e.preventDefault();
+        const {name, value} = e.target;
+        let formErrors = this.state.formErrors;
+
+        switch(name){
+            case 'firstName':
+                formErrors.firstName = value.length < 3 ? 
+                'minimum of 3 characters required'
+                :"";
+            break;
+
+            case 'lastName':
+                formErrors.lastName = value.length < 3 ?
+                'minimum of 3 characters required'
+                :"";
+            break;
+
+            case 'email':
+                formErrors.email =
+                emailRegex.test(value) 
+                ?''
+                :"invalid email address";
+            break;
+
+            case 'password':
+                formErrors.password = value.length < 6 ?
+                'minimum of 6 characters required'
+                :"";
+            break;
+
+            default:
+            break;
+        }
+
+        this.setState({formErrors, [name]: value}, () => console.log(this.state));
+    };
+
     render() {
+        const {formErrors} = this.state;
         return(
-            <div className = 'contact-body'>
-                <Grid className = "contact-grid">
-                    <Cell col= {5}>
-                        <h2>NightGeeks</h2>
-                        <img
-                            src='https://cdn2.iconfinder.com/data/icons/avatar-2/512/Fred_man-512.png'
-                            alt = 'avatar'
-                            style={{height:'250px'}}
-                        />
-                        <p style={{width:'75%', margin: 'auto', paddingTop: '1em', color: "black"}}>
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-                        </p>
-                    </Cell>
+            <div className='wrapper'>
+                <div className = 'form-wrapper'>
+                    <h3>Contact Us</h3>
+                    <form onSubmit={this.handleSubmit} noValidate>
+                        <div className="firstName">
+                            <label htmlFor="firstName">First Name</label>
+                            <input 
+                            type="text" 
+                            className={formErrors.firstName.length > 0 ? "error" : null}
+                            placeholder="First Name"
+                            name="firstName"
+                            noValidate
+                            onChange={this.handleChange}/>
 
-                    {/* 2nd half */}
-                    <Cell col= {7}>
-                        <h2>Contact Us</h2>
-                        <hr/>
-                        <div className='contact-list'>
-                            <List>
-                                <ListItem>
-                                    <ListItemContent style={{fontSize: '30px', fontFamily: 'Anton'}}>
-                                        <i className = "fa fa-phone-square" aria-hidden = "true"/>(234) 703-980-9517
-                                    </ListItemContent>
-                                </ListItem>
+                            {formErrors.firstName.length > 0 && (
+                                <span className="errorMessage">{formErrors.firstName}</span>
+                            )}
 
-                                <ListItem>
-                                    <ListItemContent style={{fontSize: '30px', fontFamily: 'Anton'}}>
-                                        <i className = "fa fa-fax" aria-hidden = "true"/>(234) 703-980-9517
-                                    </ListItemContent>
-                                </ListItem>
-
-                                <ListItem>
-                                    <ListItemContent style={{fontSize: '30px', fontFamily: 'Anton'}}>
-                                        <i className = "fa fa-envelope" aria-hidden = "true"/>augustineumeagudosi@gmail.com
-                                    </ListItemContent>
-                                </ListItem>
-
-                                <ListItem>
-                                    <ListItemContent style={{fontSize: '30px', fontFamily: 'Anton'}}>
-                                        <i className = "fa fa-skype" aria-hidden = "true"/>MySkypeId
-                                    </ListItemContent>
-                                </ListItem>
-                            </List>
                         </div>
-                    </Cell>
-                </Grid>
+                        
+                        <div className="lastName">
+                            <label htmlFor="lastName">Last Name</label>
+                            <input
+                            className={formErrors.lastName.length > 0 ? "error" : null} 
+                            type="text"
+                            placeholder="Last Name"
+                            name="lastName"
+                            noValidate
+                            onChange={this.handleChange}/>
+
+                            {formErrors.lastName.length > 0 && (
+                                <span className="errorMessage">{formErrors.lastName}</span>
+                            )}
+                        </div>
+
+                        <div className="email">
+                            <label htmlFor="email">Email</label>
+                            <input 
+                            className={formErrors.email.length > 0 ? "error" : null}
+                            type="email" 
+                            placeholder="Email"
+                            name="email"
+                            noValidate
+                            onChange={this.handleChange}/>
+
+                            {formErrors.email.length > 0 && (
+                                <span className="errorMessage">{formErrors.email}</span>
+                            )}
+                        </div>
+
+                        <div className="password">
+                            <label htmlFor="password">Password</label>
+                            <input 
+                            className={formErrors.password.length > 0 ? "error" : null}
+                            type="password" 
+                            placeholder="Password"
+                            name="password"
+                            noValidate
+                            onChange={this.handleChange}/>
+
+                            {formErrors.password.length > 0 && (
+                                <span className="errorMessage">{formErrors.password}</span>
+                            )}
+                        </div>
+                        <div className="createAccount">
+                            <button type="submit">Create Account</button>
+                            <small>Already have an Account?</small>
+                        </div>
+                    </form>
+                </div>
             </div>
         );
     }
